@@ -1,21 +1,1481 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>slidetss</title>
-  <style>
-    body { font-family: system-ui, -apple-system, sans-serif; background: #FFF6E3; color: #1B2B21; display: flex; align-items: center; justify-content: center; min-height: 100vh; margin: 0; text-align: center; }
-    .card { background: #fff; border: 3px solid #1B2B21; padding: 40px; border-radius: 22px; max-width: 500px; box-shadow: 6px 6px 0 #1B2B21; }
-    h1 { color: #1F883D; margin-top: 0; }
-    p { color: #5C6A5F; line-height: 1.6; }
-  </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Crea una presentazione</title>
+<meta name="description" content="Scrivi le slide, o incolla un testo, e ottieni tutto il necessario per preparare il file PowerPoint.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Crea una presentazione">
+<meta property="og:description" content="Scrivi le slide, o incolla un testo, e ottieni tutto il necessario per preparare il file PowerPoint.">
+<meta property="og:locale" content="it_IT">
+<meta name="theme-color" content="#b8502a">
+<script>
+(function () {
+  var t = null;
+  try { t = localStorage.getItem('crea-presentazioni-tema'); } catch (e) { /* ignora */ }
+  if (t !== 'dark' && t !== 'light') {
+    t = (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) ? 'dark' : 'light';
+  }
+  document.documentElement.setAttribute('data-theme', t);
+  try { if (localStorage.getItem('crea-presentazioni-barra') === 'min') document.documentElement.classList.add('rail-min'); } catch (e) { /* ignora */ }
+})();
+</script>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%23b8502a'/%3E%3Crect x='7' y='9' width='18' height='12' rx='1.5' fill='none' stroke='white' stroke-width='2'/%3E%3Cpath d='M16 21v4M12 25h8' stroke='white' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E">
+<style>
+  :root {
+    --bg: #faf9f7;
+    --card: #ffffff;
+    --ink: #1f1e1c;
+    --muted: #5c5952;
+    --line: #d9d5cc;
+    --accent: #b8502a;
+    --accent-dark: #97401f;
+    --accent-soft: #f7ece6;
+    --ok: #2f7a4d;
+    --radius: 10px;
+    --field: #ffffff;
+    --accent-line: #ecd5c9;
+    --guide-note: #5a4a42;
+    --line-strong: #a8a397;
+    --btn-hover: #fbfaf8;
+    --primary-off: #d4d0c7;
+    --hover: #f1efeb;
+    --danger: #a8321f;
+    --danger-bg: #fbe9e6;
+    --dash: #cfcac0;
+    --head-bg: #f4f2ee;
+    --banner-bg: #fff6dc;
+    --banner-line: #ecd98e;
+    --field-line: #b9b4a8;
+    --s1: #2a6a9e; --s1-soft: #e4eff8;
+    --s2: #b8502a; --s2-soft: #f7ece6;
+    --s3: #6a4aa5; --s3-soft: #eee9f8;
+    --step: var(--accent);
+    --step-soft: var(--accent-soft);
+    --on-step: #ffffff;
+    --hover-filter: brightness(.9);
+    color-scheme: light;
+  }
+  :root[data-theme="dark"] {
+    --bg: #171614;
+    --card: #211f1d;
+    --ink: #ece9e4;
+    --muted: #b3aea6;
+    --line: #3a3733;
+    --field-line: #5d5952;
+    --accent: #e08a64;
+    --accent-dark: #f0a07e;
+    --accent-soft: #2b201a;
+    --ok: #6fcf97;
+    --field: #1a1917;
+    --accent-line: #4a3226;
+    --guide-note: #c4b8b0;
+    --line-strong: #6b6760;
+    --btn-hover: #2a2825;
+    --primary-off: #3f3b36;
+    --hover: #2c2a27;
+    --danger: #f08a78;
+    --danger-bg: #3a211d;
+    --dash: #55514b;
+    --head-bg: #2a2825;
+    --banner-bg: #3a3118;
+    --banner-line: #6b5a22;
+    --s1: #7ab8e8; --s1-soft: #1b2a37;
+    --s2: #e08a64; --s2-soft: #2b201a;
+    --s3: #b9a3ea; --s3-soft: #261f36;
+    --on-step: #14110f;
+    --hover-filter: brightness(1.12);
+    color-scheme: dark;
+  }
+  header { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font: 17px/1.6 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  }
+  .wrap { max-width: 820px; margin: 0 auto; padding: 36px 20px 96px; }
+  header h1 { font-size: 2.1rem; line-height: 1.2; margin: 0 0 8px; letter-spacing: -0.01em; }
+  header p { margin: 0; color: var(--muted); max-width: 60ch; }
+
+  section { margin-top: 44px; }
+  .eyebrow { font-size: .78rem; text-transform: uppercase; letter-spacing: .08em; color: var(--accent); font-weight: 600; margin: 0 0 4px; }
+  h2 { font-size: 1.3rem; margin: 0 0 6px; }
+  .lead { color: var(--muted); margin: 0 0 18px; }
+
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 22px; }
+
+  /* Guida modello */
+
+  /* Form */
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 22px 20px; }
+  .grid .full { grid-column: 1 / -1; }
+  @media (max-width: 620px) { .grid { grid-template-columns: 1fr; } }
+  .field { display: flex; flex-direction: column; gap: 6px; font-size: .95rem; font-weight: 600; }
+  .field small { font-weight: 400; color: var(--muted); font-size: .88rem; }
+  .field .hint { font-weight: 400; margin: 2px 0 0; }
+  input[type=text], select, textarea {
+    font: inherit; font-weight: 400; color: var(--ink);
+    border: 1px solid var(--field-line); border-radius: 8px; background: var(--field);
+    padding: 11px 13px; width: 100%;
+  }
+  textarea { resize: vertical; line-height: 1.5; }
+  input:focus, select:focus, textarea:focus { outline: 2px solid var(--step); outline-offset: 0; border-color: transparent; }
+  .inline { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  input[type=color] { width: 44px; height: 38px; padding: 2px; border: 1px solid var(--line); border-radius: 8px; background: var(--field); cursor: pointer; }
+  input[type=color]:disabled { opacity: .35; cursor: not-allowed; }
+  .check { display: inline-flex; align-items: center; gap: 7px; font-size: .92rem; font-weight: 400; cursor: pointer; }
+
+  /* Bottoni */
+  button { font: inherit; cursor: pointer; }
+  .btn { border-radius: 8px; padding: 10px 18px; border: 1px solid var(--field-line); background: var(--field); color: var(--ink); font-weight: 600; }
+  .btn:hover { border-color: var(--line-strong); background: var(--btn-hover); }
+  .btn.primary { background: var(--accent); border-color: var(--accent); color: #fff; padding: 12px 22px; font-size: 1.02rem; }
+  .btn.primary:hover { background: var(--accent-dark); border-color: var(--accent-dark); }
+  .btn.primary:disabled { background: var(--primary-off); border-color: var(--primary-off); cursor: not-allowed; }
+  .btn.small, .mini { padding: 4px 10px; font-size: .85rem; font-weight: 500; }
+  .mini { border: 1px solid transparent; background: transparent; color: var(--muted); border-radius: 6px; }
+  .mini:hover:not(:disabled) { background: var(--hover); color: var(--ink); }
+  .mini:disabled { opacity: .3; cursor: default; }
+  .mini.danger:hover:not(:disabled) { background: var(--danger-bg); color: var(--danger); }
+  a.btn { text-decoration: none; display: inline-block; }
+
+  /* Slide */
+  #slides { display: flex; flex-direction: column; gap: 14px; }
+  .slide-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 12px; }
+  .slide-head .label { font-weight: 600; font-size: .92rem; color: var(--muted); }
+  .slide-tools { display: flex; gap: 2px; flex-wrap: wrap; justify-content: flex-end; }
+  .slide-body { display: flex; flex-direction: column; gap: 10px; }
+  .slide-extras { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
+  .add-slide { margin-top: 14px; width: 100%; padding: 13px; border: 1.5px dashed var(--dash); background: transparent; border-radius: var(--radius); color: var(--muted); font-weight: 600; }
+  .add-slide:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-soft); }
+
+  /* Tabella */
+  .tbl-box { margin-top: 12px; border-top: 1px solid var(--line); padding-top: 12px; }
+  .tbl-scroll { overflow-x: auto; padding-bottom: 4px; }
+  table.grid-ed { border-collapse: separate; border-spacing: 4px; }
+  table.grid-ed input { min-width: 110px; padding: 7px 9px; font-size: .92rem; }
+  table.grid-ed tr.head input { font-weight: 700; background: var(--head-bg); }
+  table.grid-ed td.cdel { text-align: center; padding: 0; }
+  .tbl-actions { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-top: 8px; }
+  .tbl-actions .spacer { flex: 1; }
+
+  /* Prompt */
+  #prompt { width: 100%; min-height: 340px; font-family: ui-monospace, "Cascadia Mono", Consolas, monospace; font-size: .86rem; line-height: 1.55; }
+  .banner { background: var(--banner-bg); border: 1px solid var(--banner-line); border-radius: 8px; padding: 10px 12px; font-size: .9rem; margin-bottom: 10px; display: none; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+  .banner.show { display: flex; }
+  .actions { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; margin-top: 14px; }
+  .status { font-size: .92rem; color: var(--ok); font-weight: 600; min-height: 1.4em; }
+  .status.err { color: var(--danger); }
+  .hint { color: var(--muted); font-size: .9rem; margin-top: 10px; }
+  /* Modelli e testo da dividere */
+  details.tools { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); margin-bottom: 14px; }
+  details.tools > summary { cursor: pointer; padding: 13px 18px; font-weight: 600; }
+  details.tools > .body { padding: 0 18px 18px; }
+  .sub-title { font-size: .85rem; font-weight: 600; color: var(--muted); margin: 14px 0 8px; }
+  .tpl-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 8px; }
+  button.tpl { text-align: left; background: var(--field); border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; display: flex; flex-direction: column; gap: 2px; }
+  button.tpl:hover { border-color: var(--accent); background: var(--accent-soft); }
+  button.tpl span { color: var(--muted); font-size: .85rem; }
+  .mode { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 16px; }
+  @media (max-width: 620px) { .mode { grid-template-columns: 1fr; } }
+  .mode-opt { display: flex; gap: 10px; align-items: flex-start; background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 12px 14px; cursor: pointer; }
+  .mode-opt:hover { border-color: var(--line-strong); }
+  .mode-opt.on { border-color: var(--accent); background: var(--accent-soft); }
+  .mode-opt input { margin-top: 4px; accent-color: var(--accent); }
+  .mode-opt small { display: block; color: var(--muted); font-size: .85rem; margin-top: 2px; }
+  [hidden] { display: none !important; }
+  #s-testo { min-height: 240px; }
+  .model-bar { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; background: var(--accent-soft); border: 1px solid var(--accent-line); border-radius: var(--radius); padding: 9px 14px; margin-bottom: 14px; font-size: .92rem; }
+  button.tpl.on { border-color: var(--accent); background: var(--accent-soft); }
+  .logo-box { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; background: var(--accent-soft); border: 1px solid var(--accent-line); border-radius: var(--radius); padding: 10px 14px; margin-top: 8px; font-size: .92rem; font-weight: 400; }
+  .logo-box img { width: 110px; height: auto; background: #fff; border-radius: 6px; border: 1px solid var(--line); }
+  .logo-box p { margin: 0 0 6px; }
+  .drawer-bg { position: fixed; inset: 0; z-index: 30; background: rgba(0, 0, 0, .45); opacity: 0; visibility: hidden; transition: opacity .2s, visibility 0s linear .2s; }
+  .drawer { position: fixed; top: 0; bottom: 0; left: 0; z-index: 40; width: min(460px, 100vw); display: flex; flex-direction: column; background: var(--card); border-right: 1px solid var(--line); box-shadow: 8px 0 28px rgba(0, 0, 0, .25); transform: translateX(-102%); visibility: hidden; transition: transform .25s ease, visibility 0s linear .25s; }
+  body.drawer-open { overflow: hidden; }
+  body.drawer-open .drawer-bg { opacity: 1; visibility: visible; transition-delay: 0s; }
+  body.drawer-open .drawer { transform: none; visibility: visible; transition-delay: 0s; }
+  .drawer-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 16px 20px; border-bottom: 1px solid var(--line); }
+  .drawer-head h2 { margin: 0; font-size: 1.25rem; }
+  .drawer-body { padding: 16px 20px 28px; overflow-y: auto; }
+  .drawer-body > div > p:first-child { margin-top: 0; color: var(--muted); }
+  .drawer-body ol { padding-left: 1.2em; margin: 8px 0; }
+  .drawer-body li { margin: 10px 0; }
+  .drawer-body a { color: var(--accent-dark); }
+  .drawer-body .note { font-size: .92rem; color: var(--guide-note); }
+  .drawer-body .notice { background: var(--banner-bg); border: 1px solid var(--banner-line); border-radius: 8px; padding: 10px 12px; font-size: .92rem; margin: 14px 0; }
+  .st-guide { border-top: 0; padding-top: 0; }
+  .st-tool[aria-expanded="true"] { color: var(--ink); background: var(--hover); }
+  @media (prefers-reduced-motion: reduce) { .drawer, .drawer-bg { transition: none; } }
+  details.adv { border-top: 1px solid var(--line); padding-top: 12px; }
+  details.adv > summary { cursor: pointer; font-weight: 600; display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 12px; }
+  details.adv .adv-sum { font-weight: 400; color: var(--muted); font-size: .88rem; }
+  details.adv > .grid { margin-top: 14px; }
+  .tono-list { list-style: none; margin: 2px 0 0; padding: 0; display: grid; gap: 4px; font-weight: 400; font-size: .88rem; color: var(--muted); }
+  .tono-list li { padding: 6px 10px; border: 1px solid transparent; border-radius: 8px; }
+  .tono-list li strong { color: var(--ink); font-weight: 600; }
+  .tono-list li.on { background: var(--accent-soft); border-color: var(--accent-line); color: var(--ink); }
+  .steps3 { list-style: none; counter-reset: s3; margin: 0 0 16px; padding: 0; display: grid; gap: 10px; }
+  .s3 { counter-increment: s3; display: flex; gap: 14px; align-items: flex-start; background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 14px 16px; }
+  .s3-n { flex: none; width: 34px; height: 34px; border-radius: 11px; display: grid; place-items: center; font-weight: 700; background: var(--step-soft); color: var(--step); border: 2px solid var(--step); }
+  .s3-n .n::before { content: counter(s3); }
+  .s3-n .ok { display: none; }
+  .s3.done .s3-n { background: var(--ok); border-color: var(--ok); color: var(--on-step); }
+  .s3.done .s3-n .n { display: none; }
+  .s3.done .s3-n .ok { display: inline; }
+  .s3-body { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+  .s3-text { color: var(--muted); font-size: .92rem; }
+  .s3-body .actions { margin-top: 6px; }
+  details.prompt-box > summary::after { content: ""; color: var(--danger); font-weight: 400; font-size: .88rem; margin-left: 12px; }
+  details.prompt-box.dirty > summary::after { content: "⚠️ modificato a mano"; }
+  .box-title { font-size: .85rem; font-weight: 600; color: var(--muted); }
+  .quote-box textarea, .quote-box input, .img-box input, .img-box select { width: 100%; }
+  .chart-row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-bottom: 8px; }
+  .chart-row select { width: auto; }
+  /* ---- Un colore per ogni passo ---- */
+  #sec-impostazioni { --step: var(--s1); --step-soft: var(--s1-soft); }
+  #sec-slide { --step: var(--s2); --step-soft: var(--s2-soft); }
+  #sec-prompt { --step: var(--s3); --step-soft: var(--s3-soft); }
+  section { margin-top: 60px; scroll-margin-top: 76px; }
+  .step-head { display: flex; align-items: center; gap: 14px; margin-bottom: 10px; }
+  .step-head h2 { font-size: 1.55rem; line-height: 1.25; margin: 0; }
+  .step-head .eyebrow { color: var(--step); margin: 0 0 2px; font-size: .82rem; }
+  .badge { flex: none; width: 46px; height: 46px; border-radius: 14px; background: var(--step); color: var(--on-step); display: grid; place-items: center; font-weight: 700; font-size: 1.35rem; }
+  .lead { font-size: 1rem; }
+  .hint { font-size: .95rem; }
+
+  /* Barra dei passi, sempre in alto */
+  /* ---- Barra laterale dei passi ---- */
+  :root { --rail-pad: 190px; }
+  :root.rail-min { --rail-pad: 64px; }
+  body { padding-left: var(--rail-pad); }
+  @media (min-width: 1260px) { :root { --rail-pad: 0px; } }
+  @media (min-width: 948px) { :root.rail-min { --rail-pad: 0px; } }
+  .stepper { position: fixed; left: 12px; top: 50%; transform: translateY(-50%); z-index: 20; width: 176px; max-height: calc(100vh - 24px); overflow-x: hidden; overflow-y: auto; padding: 6px; scrollbar-width: thin; }
+  :root.rail-min .stepper { width: 56px; }
+  .stepper-in { display: flex; flex-direction: column; gap: 16px; }
+  .st-steps { position: relative; display: flex; flex-direction: column; gap: 20px; }
+  .st-line { position: absolute; left: 20px; top: 21px; bottom: 21px; width: 4px; margin-left: -2px; border-radius: 2px; background: var(--line); }
+  .st-fill { position: absolute; inset: 0; border-radius: 2px; background: linear-gradient(to bottom, var(--s1), var(--s2), var(--s3)); clip-path: inset(0 0 100% 0); }
+  .st-item { position: relative; }
+  .st-item[data-step="1"] { --step: var(--s1); --step-soft: var(--s1-soft); }
+  .st-item[data-step="2"] { --step: var(--s2); --step-soft: var(--s2-soft); }
+  .st-item[data-step="3"] { --step: var(--s3); --step-soft: var(--s3-soft); }
+  .st-main { display: flex; align-items: center; gap: 10px; text-decoration: none; color: var(--muted); font-weight: 600; font-size: .95rem; }
+  .st-main .t { background: var(--bg); padding: 1px 4px; border-radius: 6px; line-height: 1.25; }
+  .tile { flex: none; width: 42px; height: 42px; border-radius: 13px; display: grid; place-items: center; font-weight: 700; font-size: 1.15rem; background: var(--step-soft); color: var(--step); border: 2px solid var(--step); transition: background .15s, box-shadow .15s, transform .15s; }
+  .tile-ok { display: none; }
+  .st-item.done .tile { background: var(--ok); border-color: var(--ok); color: var(--on-step); }
+  .st-item.done .tile-n { display: none; }
+  .st-item.done .tile-ok { display: inline; }
+  .st-item.on .st-main { color: var(--ink); }
+  .st-item.on .tile { box-shadow: 0 0 0 3px var(--bg), 0 0 0 5px var(--step); transform: scale(1.05); }
+  .st-item:not(.on) .st-main:hover .tile { transform: scale(1.05); }
+  .st-sub { margin: 8px 0 0 54px; display: flex; flex-direction: column; gap: 2px; max-height: 30vh; overflow-y: auto; scrollbar-width: thin; }
+  .st-sub[hidden] { display: none; }
+  .st-sub a { display: flex; gap: 7px; align-items: baseline; font-size: .84rem; color: var(--muted); text-decoration: none; padding: 3px 7px; border-radius: 7px; background: var(--bg); }
+  .st-sub a b { flex: none; color: var(--s2); font-weight: 700; }
+  .st-sub a span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .st-sub a:hover { background: var(--hover); color: var(--ink); }
+  .st-sub a.on { background: var(--s2-soft); color: var(--ink); }
+  .st-tools { display: flex; flex-direction: column; gap: 4px; border-top: 1px solid var(--line); padding-top: 12px; }
+  .st-tool { display: flex; align-items: center; gap: 10px; background: var(--bg); border: 0; border-radius: 10px; padding: 5px 0; color: var(--muted); font-size: .88rem; font-weight: 600; text-align: left; }
+  .st-tool .ic { flex: none; width: 42px; text-align: center; font-size: 1.15rem; }
+  .st-tool:hover { color: var(--ink); background: var(--hover); }
+  :root.rail-min .st-main .t, :root.rail-min .st-tool .t, :root.rail-min .st-sub { display: none; }
+  /* Su telefono: barra in basso */
+  @media (max-width: 599px) {
+    :root, :root.rail-min { --rail-pad: 0px; }
+    body { padding-bottom: 88px; }
+    .stepper { top: auto; bottom: 0; left: 0; right: 0; transform: none; width: auto !important; max-height: none; overflow: visible; background: var(--card); border-top: 1px solid var(--line); padding: 6px 10px calc(6px + env(safe-area-inset-bottom)); }
+    .stepper-in { flex-direction: row; align-items: center; justify-content: space-between; gap: 6px; }
+    .st-steps { flex-direction: row; flex: 1; justify-content: space-around; gap: 4px; }
+    .st-line, .st-sub, #st-collapse { display: none !important; }
+    .st-main { flex-direction: column; gap: 2px; font-size: .72rem; }
+    .st-main .t { display: block !important; background: none; padding: 0; }
+    .tile { width: 36px; height: 36px; font-size: 1rem; border-radius: 11px; }
+    .st-tools { flex-direction: row; border: 0; padding: 0; gap: 2px; }
+    .st-tool { background: none; }
+    .st-tool .t { display: none !important; }
+    .st-tool .ic { width: 38px; }
+  }
+  @media (prefers-reduced-motion: reduce) { .tile { transition: none; } }
+
+  /* Pulsanti */
+  .btn.primary { background: var(--step); border-color: var(--step); color: var(--on-step); }
+  .btn.primary:hover:not(:disabled) { background: var(--step); border-color: var(--step); filter: var(--hover-filter); }
+  .btn.primary:disabled { background: var(--primary-off); border-color: var(--primary-off); color: var(--muted); }
+  .btn:disabled { opacity: .45; cursor: not-allowed; }
+  .btn.danger { color: var(--danger); border-color: var(--danger); }
+  .btn.danger:hover:not(:disabled) { background: var(--danger-bg); border-color: var(--danger); }
+  .btn.small { padding: 7px 12px; font-size: .9rem; font-weight: 600; }
+
+  /* Schede delle slide */
+  #slides .card { border-left: 6px solid var(--step); }
+  #slides { gap: 18px; }
+  .slide-head { flex-wrap: wrap; margin-bottom: 14px; }
+  .slide-head .label { font-size: 1.2rem; font-weight: 700; color: var(--step); }
+  .slide-tools { gap: 6px; }
+  .slide-extras { align-items: center; gap: 8px; margin-top: 16px; padding-top: 14px; border-top: 1px dashed var(--line); }
+  .extras-label { font-size: .9rem; color: var(--muted); font-weight: 600; margin-right: 2px; }
+  .add-slide:hover { border-color: var(--step); color: var(--step); background: var(--step-soft); }
+  .mode-opt.on { border-color: var(--step); background: var(--step-soft); }
+  .mode-opt input { accent-color: var(--step); }
+  button.tpl:hover, button.tpl.on { border-color: var(--step); background: var(--step-soft); }
+  .model-bar { background: var(--step-soft); border-color: var(--step); }
+  details.tools > summary { font-size: 1rem; }
+
+  @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+  footer { margin-top: 48px; padding-top: 18px; border-top: 1px solid var(--line); font-size: .85rem; color: var(--muted); display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+  footer button { background: none; border: none; color: var(--muted); text-decoration: underline; padding: 0; font-size: inherit; }
+</style>
 </head>
 <body>
-  <div class="card">
-    <h1>slidetss è online! 🌱</h1>
-    <p>Questo sito è stato creato con <strong>Pagi Hub</strong>.</p>
-    <p>Per pubblicare il sito vero, trascina la tua cartella HTML nell'applicazione.</p>
+<nav class="stepper" aria-label="Passi">
+  <div class="stepper-in">
+    <div class="st-steps">
+      <div class="st-line" aria-hidden="true"><span class="st-fill" id="st-fill"></span></div>
+      <div class="st-item" data-step="1">
+        <a class="st-main" href="#sec-impostazioni" title="Passo 1: Impostazioni"><span class="tile"><span class="tile-n">1</span><span class="tile-ok">✓</span></span><span class="t">Impostazioni</span></a>
+      </div>
+      <div class="st-item" data-step="2">
+        <a class="st-main" href="#sec-slide" title="Passo 2: Slide"><span class="tile"><span class="tile-n">2</span><span class="tile-ok">✓</span></span><span class="t">Slide</span></a>
+        <div class="st-sub" id="st-slides" hidden></div>
+      </div>
+      <div class="st-item" data-step="3">
+        <a class="st-main" href="#sec-prompt" title="Passo 3: Prompt"><span class="tile"><span class="tile-n">3</span><span class="tile-ok">✓</span></span><span class="t">Prompt</span></a>
+      </div>
+    </div>
+    <div class="st-tools st-guide">
+      <button type="button" class="st-tool" data-guida="iniziare" title="Prima di iniziare" aria-haspopup="dialog"><span class="ic">💡</span> <span class="t">Prima di iniziare</span></button>
+      <button type="button" class="st-tool" data-guida="account" title="Come creare un account Claude" aria-haspopup="dialog"><span class="ic">👤</span> <span class="t">Creare un account</span></button>
+    </div>
+    <div class="st-tools">
+      <button type="button" class="st-tool" id="tema" title="Cambia tema"><span class="ic">🌙</span> <span class="t">Tema scuro</span></button>
+      <button type="button" class="st-tool" id="reset" title="Cancella tutto e ricomincia"><span class="ic">🔄</span> <span class="t">Ricomincia</span></button>
+      <button type="button" class="st-tool" id="st-collapse"><span class="ic">‹</span> <span class="t">Comprimi</span></button>
+    </div>
   </div>
+</nav>
+<div class="drawer-bg" id="drawer-bg"></div>
+<aside class="drawer" id="drawer" role="dialog" aria-modal="true" aria-labelledby="drawer-title" aria-hidden="true" inert>
+  <div class="drawer-head">
+    <h2 id="drawer-title"></h2>
+    <button type="button" class="btn small" id="drawer-close" aria-label="Chiudi">✕ Chiudi</button>
+  </div>
+  <div class="drawer-body">
+    <div id="dp-iniziare" hidden>
+      <p>Tre impostazioni da controllare in Claude prima di incollare il prompt.</p>
+      <ol>
+        <li>Su <a href="https://claude.ai" target="_blank" rel="noopener">claude.ai</a> scegli il modello più avanzato disponibile (vince il numero di versione più alto; a parità, Opus batte Sonnet e Sonnet batte Haiku). Il piano gratuito può offrirne uno solo: usa quello.</li>
+        <li>Se c'è l'interruttore «Ragionamento esteso», attivalo: la struttura delle slide viene più curata.</li>
+        <li><strong>Attiva la creazione di file</strong> in Impostazioni, Funzionalità (può chiamarsi «Creazione e analisi di file»). Senza, non puoi scaricare il .pptx.</li>
+      </ol>
+      <div class="notice"><strong>Dati personali.</strong> Non scrivere nelle slide, nel testo incollato o nel prompt nomi, codici fiscali, date di nascita o altri dati che identificano pazienti o altre persone. Usa casi anonimi e dati aggregati.</div>
+      <p class="note">I nomi dei menu e i limiti del piano gratuito cambiano nel tempo: se compare un avviso di messaggi esauriti, riprova all'ora indicata.</p>
+      <p><button type="button" class="btn" data-guida="account">👤 Non hai un account? Come crearlo</button></p>
+    </div>
+    <div id="dp-account" hidden>
+      <p>Serve un account gratuito, che si crea in pochi minuti.</p>
+      <ol>
+        <li>Vai su <a href="https://claude.ai" target="_blank" rel="noopener">claude.ai</a>.</li>
+        <li>Scegli l'accesso con Google, oppure scrivi la tua e-mail e clicca «Continue with email»: riceverai un messaggio con un link di accesso. Aprilo (se non lo vedi, guarda nella posta indesiderata).</li>
+        <li>Inserisci il numero del tuo cellulare e il codice che arriva via SMS. La verifica non si può saltare, e non funzionano numeri fissi, VoIP o generati da app.</li>
+        <li>Indica il tuo nome, accetta le condizioni d'uso e l'informativa sulla privacy: sei dentro, con il piano gratuito.</li>
+        <li>Torna qui e leggi «Prima di iniziare» per le tre impostazioni da controllare.</li>
+      </ol>
+      <p class="note">Se Claude propone un piano a pagamento, per questo uso non serve. I passaggi e le richieste possono cambiare nel tempo. L'account che serve è quello di claude.ai: quello per sviluppatori (Console) è un'altra cosa.</p>
+      <p><button type="button" class="btn" data-guida="iniziare">💡 Vai a «Prima di iniziare»</button></p>
+    </div>
+  </div>
+</aside>
+<div class="wrap">
+
+  <header>
+    <div>
+      <h1>Crea una presentazione</h1>
+      <p>Scrivi le slide una per una, oppure incolla un testo e lascia che sia l'assistente a dividerlo. Alla fine copi il prompt già pronto e lo incolli nell'assistente AI, che prepara il file PowerPoint.</p>
+    </div>
+  </header>
+
+  <section id="sec-impostazioni">
+    <div class="step-head"><span class="badge" aria-hidden="true">1</span><div><p class="eyebrow">Passo 1</p><h2>🎯 Di cosa parla la presentazione</h2></div></div>
+    <p class="lead">Più dettagli dai, meglio vengono le slide. Tutti i campi sono facoltativi.</p>
+    <div class="card">
+      <div class="grid">
+        <label class="field full">Argomento
+          <input type="text" id="s-argomento" placeholder="Es. Presa in carico del paziente cronico sul territorio: il percorso tra medico di famiglia e Casa della Comunità">
+          <small>Di cosa parla, in una frase.</small>
+        </label>
+        <label class="field full">Titolo della presentazione
+          <input type="text" id="s-titolo" placeholder="Es. La presa in carico del paziente cronico: come funziona oggi nel distretto">
+          <small>Va sulla copertina. Se lo lasci vuoto, viene proposto in base ad argomento e contenuto.</small>
+        </label>
+        <label class="field full">Pubblico
+          <input type="text" id="s-pubblico" placeholder="Es. Medici di medicina generale e infermieri del distretto, 20 minuti di esposizione">
+          <small>Chi ascolta e quanto dura l'esposizione.</small>
+        </label>
+        <p class="box-title full" style="margin:6px 0 -4px">Copertina</p>
+        <label class="field full">Logo dell'Azienda USL Toscana centro
+          <select id="s-logo">
+            <option value="nessuno">Nessun logo</option>
+            <option value="copertina">Solo nella copertina</option>
+            <option value="tutte">Nella copertina e, piccolo, in tutte le slide</option>
+          </select>
+          <small>Il logo va allegato alla chat insieme al prompt (te lo ricordo al Passo 3).</small>
+        </label>
+        <div class="logo-box" id="logo-box" hidden>
+          <img src="logo-asl-toscana-centro.png" alt="Logo dell'Azienda USL Toscana centro" width="110">
+          <div>
+            <p><strong>Allega questo file alla chat.</strong> Il prompt chiede di usarlo senza modificarlo.</p>
+            <a class="btn small" href="logo-asl-toscana-centro.png" download="logo-asl-toscana-centro.png">⬇️ Scarica il logo</a>
+          </div>
+        </div>
+        <div class="field full">
+          <label class="check"><input type="checkbox" id="s-zona"> Scrivi «Zona Fiorentina Sud-Est» nella copertina</label>
+          <small>Compare come sottotitolo, sotto il titolo, nella prima slide.</small>
+        </div>
+        <div class="field full">
+          <label class="check"><input type="checkbox" id="s-presentatore"> Lascia nella copertina uno spazio per nome, cognome e data</label>
+          <small>Nome e data restano vuoti nel file e li compili tu in PowerPoint: non vengono scritti nel prompt.</small>
+        </div>
+        <details class="adv full" id="adv">
+          <summary>⚙️ Opzioni avanzate <span class="adv-sum" id="adv-sum"></span></summary>
+          <div class="grid">
+        <div class="field full">
+          <label for="s-tono">Tono</label>
+          <select id="s-tono">
+            <option>Chiaro e divulgativo</option>
+            <option>Formale e professionale</option>
+            <option>Tecnico e preciso</option>
+            <option>Colloquiale e diretto</option>
+          </select>
+          <ul class="tono-list" id="tono-list"></ul>
+        </div>
+        <label class="field">Lingua
+          <select id="s-lingua">
+            <option>Italiano</option><option>Inglese</option><option>Francese</option>
+            <option>Spagnolo</option><option>Tedesco</option>
+          </select>
+          <small>La lingua in cui sono scritte le slide.</small>
+        </label>
+        <label class="field">Stile grafico
+          <select id="s-stile">
+            <option>Sobrio e minimale</option>
+            <option>Moderno e pulito</option>
+            <option>Accademico</option>
+            <option>Aziendale</option>
+            <option>Creativo, ma ordinato</option>
+          </select>
+          <small>L'aspetto generale delle slide.</small>
+        </label>
+        <label class="field">Quantità di testo per slide
+          <select id="s-lunghezza">
+            <option>Essenziale</option>
+            <option>Media</option>
+            <option>Ricca</option>
+          </select>
+          <small>Quanto testo mettere in ogni slide.</small>
+        </label>
+        <label class="field full">Come trattare i tuoi testi
+          <select id="s-autonomia">
+            <option>Fedele al testo</option>
+            <option>Rifinisci e migliora</option>
+            <option>Sviluppa a partire da appunti</option>
+          </select>
+          <span class="hint" style="margin:2px 0 0">Fedele: corregge solo i refusi. Rifinisci: riscrive in modo più chiaro senza aggiungere informazioni. Sviluppa: trasforma i tuoi appunti in testo da slide.</span>
+        </label>
+        <div class="field full">
+          Colore principale
+          <div class="inline">
+            <input type="color" id="s-colore" aria-label="Colore principale">
+            <label class="check"><input type="checkbox" id="s-colore-auto"> Scelto in automatico, in base all'argomento</label>
+          </div>
+        </div>
+          </div>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <section id="sec-slide">
+    <div class="step-head"><span class="badge" aria-hidden="true">2</span><div><p class="eyebrow">Passo 2</p><h2>🎞️ Le slide</h2></div></div>
+    <p class="lead" id="lead-slide"></p>
+    <div class="mode" role="radiogroup" aria-label="Come vuoi dare il contenuto">
+      <label class="mode-opt"><input type="radio" name="modo" value="schede">
+        <span><strong>✍️ Scrivo le slide una per una</strong><small>Una scheda per slide, con titolo, tabelle, grafici, immagini e note.</small></span></label>
+      <label class="mode-opt"><input type="radio" name="modo" value="testo">
+        <span><strong>📄 Incollo un testo e lo divide l'assistente</strong><small>Un unico testo: viene diviso in slide, con i titoli scelti in automatico.</small></span></label>
+    </div>
+
+    <div id="modo-schede">
+      <details class="tools" id="tools-start">
+        <summary>🧩 Parti da un modello (facoltativo)</summary>
+        <div class="body">
+          <div class="tpl-row" id="tpl-row"></div>
+          <p class="hint">Un modello sostituisce le slide e cambia qualche impostazione (tono, stile, quantità di testo). Argomento, pubblico, lingua e colore restano i tuoi. Le slide arrivano con il titolo e un suggerimento: scrivi il contenuto o eliminale.</p>
+        </div>
+      </details>
+      <div class="model-bar" id="model-bar" hidden>
+        <span>🧩 Modello in uso: <strong id="model-name"></strong></span>
+        <button type="button" class="btn small" id="model-remove">↩️ Rimuovi modello</button>
+      </div>
+      <div id="slides"></div>
+      <button class="add-slide" id="add-slide" type="button">➕ Aggiungi una slide</button>
+    </div>
+
+    <div id="modo-testo" hidden>
+      <div class="card">
+        <label class="field">Il tuo testo
+          <textarea id="s-testo" rows="12" placeholder="Incolla qui il testo della presentazione, anche lungo e senza una struttura precisa. Viene diviso in slide e i titoli li sceglie l'assistente."></textarea>
+        </label>
+        <label class="field" style="margin-top:14px">Numero di slide
+          <input type="number" id="s-numero" min="1" max="100" inputmode="numeric" placeholder="Automatico: in base al testo">
+        </label>
+        <p class="hint">Se nel testo vuoi una tabella, un grafico, un'immagine, una citazione o una nota del relatore, scrivilo dove deve comparire: per esempio una tabella in Markdown, oppure «qui un grafico a barre con questi dati: ...». Per le immagini scrivi il nome del file e allegalo alla chat.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="sec-prompt">
+    <div class="step-head"><span class="badge" aria-hidden="true">3</span><div><p class="eyebrow">Passo 3</p><h2>🚀 Crea il file con Claude</h2></div></div>
+    <p class="lead">Segui i passaggi: ogni spunta si accende quando hai fatto quello che serve.</p>
+    <ol class="steps3">
+      <li class="s3" id="s3-copia">
+        <span class="s3-n"><span class="n"></span><span class="ok">✓</span></span>
+        <div class="s3-body">
+          <strong>Copia il prompt</strong>
+          <span class="s3-text" id="hint"></span>
+          <div class="actions">
+            <button class="btn primary" type="button" id="copy">📋 Copia il prompt</button>
+            <span class="status" id="status" role="status"></span>
+          </div>
+        </div>
+      </li>
+      <li class="s3" id="s3-logo" hidden>
+        <span class="s3-n"><span class="n"></span><span class="ok">✓</span></span>
+        <div class="s3-body">
+          <strong>Scarica il logo</strong>
+          <span class="s3-text">Poi allegalo alla chat insieme al prompt, altrimenti non può comparire nelle slide.</span>
+          <div class="actions"><a class="btn" href="logo-asl-toscana-centro.png" download="logo-asl-toscana-centro.png">⬇️ Scarica il logo</a></div>
+        </div>
+      </li>
+      <li class="s3" id="s3-claude">
+        <span class="s3-n"><span class="n"></span><span class="ok">✓</span></span>
+        <div class="s3-body">
+          <strong>Apri una nuova chat in Claude</strong>
+          <span class="s3-text">Con il modello e la creazione di file impostati come in «Prima di iniziare».</span>
+          <div class="actions"><a class="btn" id="open-claude" href="https://claude.ai/new" target="_blank" rel="noopener">↗️ Apri Claude</a><button class="btn" type="button" data-guida="iniziare">💡 Prima di iniziare</button></div>
+        </div>
+      </li>
+      <li class="s3">
+        <span class="s3-n"><span class="n"></span><span class="ok">✓</span></span>
+        <div class="s3-body">
+          <strong>Incolla il prompt e invia</strong>
+          <span class="s3-text">Se hai indicato delle immagini, allega prima i file alla chat.</span>
+        </div>
+      </li>
+      <li class="s3">
+        <span class="s3-n"><span class="n"></span><span class="ok">✓</span></span>
+        <div class="s3-body">
+          <strong>Scarica il file .pptx</strong>
+          <span class="s3-text">Dal link nella risposta. Se non lo trova, scrivigli: «Crea il file .pptx scaricabile».</span>
+        </div>
+      </li>
+    </ol>
+    <details class="tools prompt-box" id="prompt-box">
+      <summary>👁️ Vedi o modifica il prompt</summary>
+      <div class="body">
+        <p class="hint" style="margin-top:0">Si aggiorna da solo mentre compili. Include le regole per evitare l'aspetto «fatto con l'AI». Puoi modificarlo come vuoi.</p>
+        <div class="banner" id="banner">
+          <span>Hai modificato il prompt a mano: le modifiche fatte sopra, nelle impostazioni o nelle slide, non vi compaiono.</span>
+          <button class="btn small" type="button" id="regen">Rigenera dal modulo</button>
+        </div>
+        <textarea id="prompt" spellcheck="false" aria-label="Prompt"></textarea>
+      </div>
+    </details>
+  </section>
+
+  <footer>
+    <span>Tutto resta nel tuo browser: niente account, niente invii a server. Il lavoro si salva da solo su questo dispositivo.</span>
+  </footer>
+</div>
+
+<script>
+(function () {
+  'use strict';
+
+  var KEY = 'crea-presentazioni-v1';
+  var $ = function (s) { return document.querySelector(s); };
+
+  /* ---------- Stato ---------- */
+  var uid = function () { return Math.random().toString(36).slice(2, 10); };
+  function newSlide() { return { id: uid(), titolo: '', contenuto: '', note: '', showNote: false, tabella: null, grafico: null, immagine: null, citazione: null, suggerimento: '' }; }
+  function newTable() {
+    return { intestazione: true, righe: [['', '', ''], ['', '', ''], ['', '', '']] };
+  }
+  function defaults() {
+    return {
+      settings: {
+        argomento: '', pubblico: '', lingua: 'Italiano', tono: 'Chiaro e divulgativo',
+        stile: 'Sobrio e minimale', lunghezza: 'Media', autonomia: 'Fedele al testo', coloreAuto: true, colore: '#1f4e79',
+        modo: 'schede', testo: '', numeroSlide: '', titolo: '', presentatore: true,
+        logo: 'nessuno', zona: false
+      },
+      slides: [newSlide()],
+      modello: null   // { nome, originale: slide del modello (JSON), prima: { settings, slides } }
+    };
+  }
+  function load() {
+    try {
+      var raw = localStorage.getItem(KEY);
+      if (raw) {
+        var d = JSON.parse(raw), base = defaults();
+        if (d && d.settings && Array.isArray(d.slides) && d.slides.length) {
+          d.settings = Object.assign(base.settings, d.settings);
+          return d;
+        }
+      }
+    } catch (e) { /* ignora */ }
+    return defaults();
+  }
+  var state = load();
+  var promptDirty = false;
+
+  function save() {
+    try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) { /* ignora */ }
+  }
+
+  /* ---------- Utilità DOM ---------- */
+  function h(tag, attrs) {
+    var el = document.createElement(tag);
+    attrs = attrs || {};
+    Object.keys(attrs).forEach(function (k) {
+      var v = attrs[k];
+      if (k === 'class') el.className = v;
+      else if (k === 'text') el.textContent = v;
+      else if (k.slice(0, 2) === 'on') el.addEventListener(k.slice(2), v);
+      else if (v === true) el.setAttribute(k, '');
+      else if (v !== false && v != null) el.setAttribute(k, v);
+    });
+    for (var i = 2; i < arguments.length; i++) {
+      var c = arguments[i];
+      if (c == null) continue;
+      el.appendChild(typeof c === 'string' ? document.createTextNode(c) : c);
+    }
+    return el;
+  }
+  function autosize(el) {
+    el.style.height = 'auto';
+    el.style.height = Math.max(el.scrollHeight + 2, 44) + 'px';
+  }
+
+  /* ---------- Impostazioni ---------- */
+  var settingIds = {
+    argomento: 's-argomento', pubblico: 's-pubblico', lingua: 's-lingua',
+    tono: 's-tono', stile: 's-stile', lunghezza: 's-lunghezza', autonomia: 's-autonomia', colore: 's-colore', testo: 's-testo', numeroSlide: 's-numero', titolo: 's-titolo', logo: 's-logo'
+  };
+  // Il riquadro con il logo e il promemoria compaiono solo se il logo è richiesto
+  function aggiornaLogo() {
+    var l = state.settings.logo;
+    $('#logo-box').hidden = !(l === 'copertina' || l === 'tutte');
+  }
+  // Riepilogo delle opzioni avanzate, visibile anche quando il riquadro è chiuso
+  function aggiornaAvanzate() {
+    var st = state.settings;
+    var ul = $('#tono-list');
+    if (!ul.children.length) {
+      Object.keys(TONI).forEach(function (k) {
+        ul.appendChild(h('li', { 'data-tono': k }, h('strong', { text: k + ': ' }), TONI[k].charAt(0).toUpperCase() + TONI[k].slice(1)));
+      });
+    }
+    Array.prototype.forEach.call(ul.children, function (li) { li.classList.toggle('on', li.getAttribute('data-tono') === st.tono); });
+    $('#adv-sum').textContent = [st.lingua, st.tono, st.stile, 'testo: ' + String(st.lunghezza).toLowerCase()].join(' · ');
+  }
+  // Mostra nei campi i valori dello stato (all'avvio e dopo il reset)
+  function fillSettings() {
+    Object.keys(settingIds).forEach(function (k) {
+      $('#' + settingIds[k]).value = state.settings[k];
+    });
+    var auto = $('#s-colore-auto');
+    auto.checked = state.settings.coloreAuto;
+    $('#s-colore').disabled = auto.checked;
+    $('#s-presentatore').checked = state.settings.presentatore !== false;
+    aggiornaAvanzate();
+    $('#s-zona').checked = !!state.settings.zona;
+    aggiornaLogo();
+    applyMode();
+    aggiornaModello();
+  }
+  var LEAD_SCHEDE = 'Una scheda per slide, nell\'ordine in cui compariranno. Il titolo è facoltativo: se lo lasci vuoto viene scelto in automatico. Nel contenuto una riga che inizia con «-» diventa un elenco puntato.';
+  var LEAD_TESTO = 'Incolla un unico testo: viene diviso in slide e i titoli sono scelti in automatico. Le schede delle singole slide sono disattivate (non vengono cancellate: le ritrovi se torni alla modalità precedente).';
+  function applyMode() {
+    var testo = state.settings.modo === 'testo';
+    $('#modo-schede').hidden = testo;
+    $('#modo-testo').hidden = !testo;
+    $('#lead-slide').textContent = testo ? LEAD_TESTO : LEAD_SCHEDE;
+    document.querySelectorAll('.mode-opt').forEach(function (l) {
+      var r = l.querySelector('input');
+      r.checked = r.value === state.settings.modo;
+      l.classList.toggle('on', r.checked);
+    });
+  }
+  // Collega i listener una volta sola, all'avvio
+  function bindSettings() {
+    Object.keys(settingIds).forEach(function (k) {
+      var el = $('#' + settingIds[k]);
+      el.addEventListener('input', function () {
+        state.settings[k] = el.value;
+        changed();
+      });
+    });
+    document.querySelectorAll('input[name=modo]').forEach(function (r) {
+      r.addEventListener('change', function () {
+        if (!r.checked) return;
+        state.settings.modo = r.value;
+        applyMode(); changed();
+      });
+    });
+    $('#s-presentatore').addEventListener('change', function () {
+      state.settings.presentatore = $('#s-presentatore').checked;
+      changed();
+    });
+    $('#s-zona').addEventListener('change', function () {
+      state.settings.zona = $('#s-zona').checked;
+      changed();
+    });
+    var auto = $('#s-colore-auto'), col = $('#s-colore');
+    auto.addEventListener('change', function () {
+      state.settings.coloreAuto = auto.checked;
+      col.disabled = auto.checked;
+      changed();
+    });
+  }
+
+  /* ---------- Slide ---------- */
+  function renderSlides() {
+    var box = $('#slides');
+    box.innerHTML = '';
+    state.slides.forEach(function (s, i) { box.appendChild(slideEl(s, i)); });
+  }
+  function refreshSlide(id) {
+    var i = state.slides.findIndex(function (s) { return s.id === id; });
+    var old = document.querySelector('[data-id="' + id + '"]');
+    if (i < 0 || !old) return renderSlides();
+    old.replaceWith(slideEl(state.slides[i], i));
+  }
+  function slideEl(s, i) {
+    var last = state.slides.length - 1;
+    var titolo = h('input', { type: 'text', value: s.titolo, placeholder: 'Titolo (facoltativo: se vuoto viene scelto in automatico)', 'aria-label': 'Titolo della slide ' + (i + 1) });
+    titolo.addEventListener('input', function () { s.titolo = titolo.value; changed(); });
+
+    var cont = h('textarea', { rows: 3, placeholder: s.suggerimento || 'Scrivi qui il contenuto della slide.\n- Una riga che inizia con il trattino diventa un elenco', 'aria-label': 'Contenuto della slide ' + (i + 1) });
+    cont.value = s.contenuto;
+    cont.addEventListener('input', function () { s.contenuto = cont.value; autosize(cont); changed(); });
+
+    var body = h('div', { class: 'slide-body' }, titolo, cont);
+
+    if (s.showNote) {
+      var note = h('textarea', { rows: 2, placeholder: 'Note del relatore: cosa dire a voce (non compare sulla slide)', 'aria-label': 'Note del relatore' });
+      note.value = s.note;
+      note.addEventListener('input', function () { s.note = note.value; autosize(note); changed(); });
+      body.appendChild(note);
+      setTimeout(function () { autosize(note); }, 0);
+    }
+    if (s.citazione) body.appendChild(citazioneEl(s));
+    if (s.immagine) body.appendChild(immagineEl(s));
+    if (s.tabella) body.appendChild(tableEl(s));
+
+    var extras = h('div', { class: 'slide-extras' }, h('span', { class: 'extras-label', text: 'Aggiungi alla slide:' }));
+    if (!s.tabella) {
+      extras.appendChild(h('button', { type: 'button', class: 'btn small', text: '🔢 Tabella', onclick: function () { s.tabella = newTable(); changed(); refreshSlide(s.id); } }));
+    }
+    if (!s.grafico) {
+      extras.appendChild(h('button', { type: 'button', class: 'btn small', text: '📈 Grafico', onclick: function () {
+        if (!s.tabella) s.tabella = newTable();
+        s.grafico = { tipo: 'Barre' };
+        changed(); refreshSlide(s.id);
+      } }));
+    }
+    if (!s.immagine) {
+      extras.appendChild(h('button', { type: 'button', class: 'btn small', text: '🖼️ Immagine', onclick: function () { s.immagine = { descrizione: '', posizione: 'A destra del testo' }; changed(); refreshSlide(s.id); } }));
+    }
+    if (!s.citazione) {
+      extras.appendChild(h('button', { type: 'button', class: 'btn small', text: '💬 Citazione', onclick: function () { s.citazione = { testo: '', autore: '' }; changed(); refreshSlide(s.id); } }));
+    }
+    if (!s.showNote) {
+      extras.appendChild(h('button', { type: 'button', class: 'btn small', text: '🎤 Note del relatore', onclick: function () { s.showNote = true; save(); refreshSlide(s.id); } }));
+    }
+
+    if (extras.children.length === 1) extras.removeChild(extras.firstChild);
+    var tools = h('div', { class: 'slide-tools' },
+      h('button', { type: 'button', class: 'btn small', text: '⬆️ Sposta su', disabled: i === 0, onclick: function () { move(i, -1); } }),
+      h('button', { type: 'button', class: 'btn small', text: '⬇️ Sposta giù', disabled: i === last, onclick: function () { move(i, 1); } }),
+      h('button', { type: 'button', class: 'btn small', text: '📑 Duplica', onclick: function () { duplicate(i); } }),
+      h('button', { type: 'button', class: 'btn small danger', text: '🗑️ Elimina', onclick: function () { remove(i); } })
+    );
+    var card = h('div', { class: 'card', 'data-id': s.id },
+      h('div', { class: 'slide-head' }, h('span', { class: 'label', text: 'Slide ' + (i + 1) }), tools),
+      body, extras);
+    setTimeout(function () { autosize(cont); }, 0);
+    return card;
+  }
+
+  function tableEl(s) {
+    var t = s.tabella;
+    var cols = t.righe[0].length;
+    var tbl = h('table', { class: 'grid-ed' });
+
+    // riga con i pulsanti per eliminare le colonne
+    var top = h('tr');
+    for (var c = 0; c < cols; c++) {
+      (function (c) {
+        top.appendChild(h('td', { class: 'cdel' },
+          h('button', { type: 'button', class: 'mini danger', text: '×', title: 'Elimina questa colonna', 'aria-label': 'Elimina colonna ' + (c + 1), disabled: cols <= 1, onclick: function () { t.righe.forEach(function (r) { r.splice(c, 1); }); changed(); refreshSlide(s.id); } })));
+      })(c);
+    }
+    top.appendChild(h('td'));
+    tbl.appendChild(top);
+
+    t.righe.forEach(function (row, r) {
+      var tr = h('tr', { class: (r === 0 && t.intestazione) ? 'head' : '' });
+      row.forEach(function (val, c) {
+        var inp = h('input', { type: 'text', value: val, 'aria-label': 'Riga ' + (r + 1) + ', colonna ' + (c + 1) });
+        inp.addEventListener('input', function () { t.righe[r][c] = inp.value; changed(); });
+        tr.appendChild(h('td', null, inp));
+      });
+      tr.appendChild(h('td', { class: 'cdel' },
+        h('button', { type: 'button', class: 'mini danger', text: '×', title: 'Elimina questa riga', 'aria-label': 'Elimina riga ' + (r + 1), disabled: t.righe.length <= 1, onclick: function () { t.righe.splice(r, 1); changed(); refreshSlide(s.id); } })));
+      tbl.appendChild(tr);
+    });
+
+    var chk = h('input', { type: 'checkbox' });
+    chk.checked = t.intestazione;
+    chk.addEventListener('change', function () { t.intestazione = chk.checked; changed(); refreshSlide(s.id); });
+
+    var chartRow = null;
+    if (s.grafico) {
+      var sel = h('select', { 'aria-label': 'Tipo di grafico' });
+      ['Barre', 'Linee', 'Torta', 'Barre orizzontali'].forEach(function (n) { sel.appendChild(h('option', { text: n })); });
+      sel.value = s.grafico.tipo;
+      sel.addEventListener('change', function () { s.grafico.tipo = sel.value; changed(); });
+      chartRow = h('div', { class: 'chart-row' },
+        h('span', { class: 'box-title', text: 'Grafico' }), sel,
+        h('span', { class: 'hint', style: 'margin:0', text: 'I dati sono la tabella qui sotto: nomi delle serie nella prima riga, categorie nella prima colonna.' }),
+        h('button', { type: 'button', class: 'mini danger', text: 'Rimuovi grafico', onclick: function () { s.grafico = null; changed(); refreshSlide(s.id); } }));
+    }
+
+    return h('div', { class: 'tbl-box' },
+      chartRow,
+      h('div', { class: 'tbl-scroll' }, tbl),
+      h('div', { class: 'tbl-actions' },
+        h('button', { type: 'button', class: 'btn small', text: '+ Riga', onclick: function () { t.righe.push(new Array(cols).fill('')); changed(); refreshSlide(s.id); } }),
+        h('button', { type: 'button', class: 'btn small', text: '+ Colonna', onclick: function () { t.righe.forEach(function (r) { r.push(''); }); changed(); refreshSlide(s.id); } }),
+        h('label', { class: 'check' }, chk, 'La prima riga è l\'intestazione'),
+        h('span', { class: 'spacer' }),
+        h('button', { type: 'button', class: 'mini danger', text: 'Rimuovi tabella', onclick: function () { s.tabella = null; s.grafico = null; changed(); refreshSlide(s.id); } })
+      ));
+  }
+
+  function citazioneEl(s) {
+    var q = s.citazione;
+    var t = h('textarea', { rows: 2, placeholder: 'Testo della citazione', 'aria-label': 'Testo della citazione' });
+    t.value = q.testo;
+    t.addEventListener('input', function () { q.testo = t.value; autosize(t); changed(); });
+    var a = h('input', { type: 'text', value: q.autore, placeholder: 'Autore e fonte (facoltativo)', 'aria-label': 'Autore della citazione' });
+    a.addEventListener('input', function () { q.autore = a.value; changed(); });
+    setTimeout(function () { autosize(t); }, 0);
+    return h('div', { class: 'tbl-box quote-box' },
+      h('div', { class: 'slide-body' },
+        h('div', { class: 'slide-head', style: 'margin:0' }, h('span', { class: 'box-title', text: 'Citazione' }),
+          h('button', { type: 'button', class: 'mini danger', text: 'Rimuovi citazione', onclick: function () { s.citazione = null; changed(); refreshSlide(s.id); } })),
+        t, a));
+  }
+
+  function immagineEl(s) {
+    var m = s.immagine;
+    var d = h('input', { type: 'text', value: m.descrizione, placeholder: 'Nome del file o descrizione dell\'immagine che allegherai alla chat', 'aria-label': 'Immagine' });
+    d.addEventListener('input', function () { m.descrizione = d.value; changed(); });
+    var p = h('select', { 'aria-label': 'Posizione dell\'immagine' });
+    ['A destra del testo', 'A sinistra del testo', 'A tutta slide', 'Sotto il titolo, a tutta larghezza'].forEach(function (n) { p.appendChild(h('option', { text: n })); });
+    p.value = m.posizione;
+    p.addEventListener('change', function () { m.posizione = p.value; changed(); });
+    return h('div', { class: 'tbl-box img-box' },
+      h('div', { class: 'slide-body' },
+        h('div', { class: 'slide-head', style: 'margin:0' }, h('span', { class: 'box-title', text: 'Immagine (il file lo allegherai tu alla chat)' }),
+          h('button', { type: 'button', class: 'mini danger', text: 'Rimuovi immagine', onclick: function () { s.immagine = null; changed(); refreshSlide(s.id); } })),
+        d, p));
+  }
+
+  function move(i, d) {
+    var j = i + d;
+    if (j < 0 || j >= state.slides.length) return;
+    var tmp = state.slides[i]; state.slides[i] = state.slides[j]; state.slides[j] = tmp;
+    changed(); renderSlides();
+  }
+  function duplicate(i) {
+    var copy = JSON.parse(JSON.stringify(state.slides[i]));
+    copy.id = uid();
+    state.slides.splice(i + 1, 0, copy);
+    changed(); renderSlides();
+  }
+  function remove(i) {
+    var s = state.slides[i];
+    var vuota = !hasContent(s);
+    if (!vuota && !confirm('Eliminare la slide ' + (i + 1) + '?')) return;
+    state.slides.splice(i, 1);
+    if (!state.slides.length) state.slides.push(newSlide());
+    changed(); renderSlides();
+  }
+
+  /* ---------- Generazione del prompt ---------- */
+  function tableHasText(t) {
+    return !!t && t.righe.some(function (r) { return r.some(function (c) { return c.trim() !== ''; }); });
+  }
+  function hasContent(s) {
+    return s.titolo.trim() !== '' || s.contenuto.trim() !== '' || tableHasText(s.tabella) || s.note.trim() !== '' || hasQuote(s) || hasImage(s);
+  }
+  function hasQuote(s) { return !!s.citazione && s.citazione.testo.trim() !== ''; }
+  function hasImage(s) { return !!s.immagine && s.immagine.descrizione.trim() !== ''; }
+  function esc(c) { return c.replace(/\|/g, '\\|').replace(/\s*\n\s*/g, ' ').trim(); }
+  function tableToMarkdown(t) {
+    var cols = t.righe[0].length;
+    var rows = t.righe.map(function (r) { return '| ' + r.map(esc).join(' | ') + ' |'; });
+    var sep = '|' + new Array(cols + 1).join(' --- |');
+    var out;
+    if (t.intestazione) {
+      out = [rows[0], sep].concat(rows.slice(1));
+    } else {
+      var vuota = '|' + new Array(cols + 1).join('  |');
+      out = [vuota, sep].concat(rows);
+    }
+    return out.join('\n') + (t.intestazione ? '' : '\n(Questa tabella non ha una riga di intestazione: la prima riga vuota serve solo al formato.)');
+  }
+
+  var LUNGHEZZE = {
+    'Essenziale': 'molto poco testo per slide: frasi brevi, al massimo 3 o 4 punti, nessun paragrafo lungo.',
+    'Media': 'testo equilibrato: al massimo 5 o 6 righe per slide, frasi brevi.',
+    'Ricca': 'testo più ricco e dettagliato, ma sempre leggibile: al massimo 8 righe per slide e mai la slide riempita fino ai bordi.'
+  };
+
+  var TONI = {
+    'Chiaro e divulgativo': 'frasi brevi e semplici, termini tecnici spiegati quando servono; adatto a chi non è specialista dell\'argomento.',
+    'Formale e professionale': 'linguaggio istituzionale e sobrio, frasi complete, nessuna espressione colloquiale; adatto a riunioni ufficiali e documenti di direzione.',
+    'Tecnico e preciso': 'terminologia specialistica senza spiegazioni di base, dati e riferimenti puntuali; adatto a colleghi esperti della materia.',
+    'Colloquiale e diretto': 'tono vicino a chi ascolta, frasi brevi e dirette, anche con il «noi» o il «voi»; adatto a incontri informali.'
+  };
+
+  var AUTONOMIE = {
+    'Fedele al testo': 'Usa i miei testi così come sono: correggi solo refusi e punteggiatura e sistema la forma degli elenchi. Non riscrivere, non accorciare e non aggiungere frasi.',
+    'Rifinisci e migliora': 'Rifinisci i miei testi: rendili più chiari, concisi e coerenti nel tono, togli le ripetizioni e riordina i punti se serve, ma senza cambiare il significato e senza aggiungere informazioni nuove. Se una slide ha troppo testo, riducila alla sostanza e porta il resto nelle note del relatore.',
+    'Sviluppa a partire da appunti': 'Considera il contenuto di ogni slide come appunti: sviluppali in un testo adatto a una slide, chiarendo i passaggi e aggiungendo esempi e contesto che ti risultano affidabili dalla tua conoscenza generale.'
+  };
+
+  var AUTONOMIE_TESTO = {
+    'Fedele al testo': 'Usa le mie parole così come sono: correggi solo refusi e punteggiatura. Non riscrivere e non accorciare: se un passaggio è troppo lungo per una slide, dividilo in più slide.',
+    'Rifinisci e migliora': 'Rifinisci il mio testo: rendilo più chiaro, conciso e coerente nel tono, togli le ripetizioni, senza cambiare il significato e senza aggiungere informazioni nuove. Se una slide ha troppo testo, riducila alla sostanza e porta il resto nelle note del relatore.',
+    'Sviluppa a partire da appunti': 'Considera il mio testo come appunti: sviluppali in testi adatti alle slide, chiarendo i passaggi e aggiungendo esempi e contesto che ti risultano affidabili dalla tua conoscenza generale.'
+  };
+
+  function numeroRichiesto(st) {
+    var n = parseInt(st.numeroSlide, 10);
+    return n > 0 ? n : 0;
+  }
+
+  function buildRules(st, n, uso) {
+    var sviluppa = st.autonomia === 'Sviluppa a partire da appunti';
+    var testo = st.modo === 'testo';
+    var num = numeroRichiesto(st);
+    var logo = (st.logo === 'copertina' || st.logo === 'tutte') ? st.logo : '';
+    var R = [];
+    R.push('STRUTTURA');
+    if (testo) {
+      R.push('- Ti do un unico testo, in fondo. Decidi tu come dividerlo in slide, nell\'ordine in cui è scritto: una slide per ogni idea o passaggio, né troppo piene né quasi vuote. Non cambiare l\'ordine e non lasciare fuori nulla. Oltre alla copertina (vedi COPERTINA) non aggiungere slide che non siano nel testo: niente agenda, riepilogo, "Grazie per l\'attenzione" o "Domande?".' + (num ? ' Il numero di slide, copertina esclusa, deve essere esattamente ' + num + '.' : ''));
+      R.push('- Scegli tu per ogni slide un titolo breve che dica il messaggio della slide, non una semplice etichetta come "Introduzione" o "Panoramica". Se nel testo ci sono già titoli o intestazioni (righe che iniziano con "#" o brevi righe isolate che fanno da titolo), usali così come sono.');
+      R.push('- Nel testo le righe che iniziano con "-" sono un elenco, le altre sono testo normale. ' + (AUTONOMIE_TESTO[st.autonomia] || AUTONOMIE_TESTO['Fedele al testo']));
+    } else R.push(sviluppa
+      ? '- Dopo la copertina (vedi COPERTINA) crea una slide per ogni scheda elencata sotto, nello stesso ordine. Aggiungi o dividi slide solo se un appunto non entra in modo leggibile. Non aggiungere agenda, riepilogo, "Grazie per l\'attenzione" o "Domande?" se non le ho scritte io.'
+      : '- Dopo la copertina (vedi COPERTINA) crea esattamente una slide per ogni slide elencata sotto, nello stesso ordine. Non aggiungere altre slide che non ho indicato: niente agenda, riepilogo, "Grazie per l\'attenzione" o "Domande?" se non le ho scritte io.');
+    if (!testo) {
+      R.push('- Se una slide ha un titolo, usalo così com\'è. Se c\'è scritto "(titolo da scegliere)", scegli tu un titolo breve che dica il messaggio della slide, non una semplice etichetta come "Introduzione" o "Panoramica".');
+      R.push('- Il contenuto è scritto in modo libero: le righe che iniziano con "-" sono un elenco, le altre sono testo normale. ' + (AUTONOMIE[st.autonomia] || AUTONOMIE['Fedele al testo']));
+    }
+    R.push('- Non inventare mai dati, cifre, date precise, citazioni o fonti che non ti ho dato. Se un punto richiederebbe un dato che manca, scrivi il concetto senza il numero e segnalalo nella risposta finale.');
+    R.push('- Tutto il testo delle slide, comprese le note del relatore, va scritto in ' + st.lingua + ' (traduci i contenuti che ti ho dato in un\'altra lingua).');
+    if (testo) {
+      R.push('- Se nel testo trovi tabelle in Markdown, inseriscile come vere tabelle PowerPoint modificabili, non come immagini, con l\'intestazione ben distinta. Se trovi indicazioni di grafici, citazioni, immagini o note del relatore (per esempio "qui un grafico a barre con questi dati"), riconoscile e realizzali al posto giusto: i grafici come veri grafici PowerPoint modificabili con i dati che ti ho dato, le citazioni in evidenza con l\'autore, le note del relatore nelle note della slide e non sulla slide.');
+      R.push('- Le immagini sono file che ti allego in questa chat: usali così come sono, senza deformarli e senza cornici. Se non trovi un file, non inserire segnaposto e segnalalo nella risposta finale.');
+    } else {
+      R.push('- Le tabelle sono scritte in Markdown: inseriscile come vere tabelle PowerPoint modificabili, non come immagini, con l\'intestazione ben distinta.');
+      if (uso.grafico) R.push('- I grafici vanno creati come veri grafici PowerPoint modificabili, con i dati che ti ho dato, non come immagini. Non aggiungere né modificare valori.');
+      if (uso.immagine) R.push('- Le immagini che indico sono file che ti allego in questa chat: usali così come sono, senza deformarli e senza cornici. Se non trovi un file, non inserire segnaposto e segnalalo nella risposta finale.');
+      R.push('- Le "Note del relatore" vanno nelle note della slide, non sulla slide.');
+    }
+    R.push('');
+    R.push('COPERTINA');
+    R.push('- La prima slide del file è sempre una copertina, con il titolo della presentazione in grande: ' + (st.titolo.trim() ? '"' + st.titolo.trim() + '"' : 'scegli tu un titolo breve, in base all\'argomento e al contenuto') + '.' + (st.zona
+      ? ' Il sottotitolo della copertina, sotto il titolo e in piccolo, è esattamente «Zona Fiorentina Sud-Est», scritto così, senza modifiche e senza altre parole. Non aggiungere altri sottotitoli.'
+      : ' Se serve, aggiungi un sottotitolo breve ricavato solo dall\'argomento o dal pubblico indicati; non inventare dettagli.'));
+    if (logo) {
+      R.push('- Logo: nella copertina inserisci il logo dell\'Azienda USL Toscana centro. È l\'immagine che ti allego in questa chat (file "logo-asl-toscana-centro.png"): usala così com\'è, senza deformarla, ritagliarla, ricolorarla, né aggiungere cornici, ombre o effetti. Ha lo sfondo bianco, quindi mettila su un\'area bianca. In copertina va in alto a sinistra, larga circa 5 cm, con il titolo sotto.');
+      if (logo === 'tutte') R.push('- In tutte le altre slide inserisci lo stesso logo, piccolo (alto circa 1,3 cm), nell\'angolo in basso a destra, sempre nella stessa posizione e dentro i margini, senza coprire testo, tabelle o grafici.');
+      R.push('- Non disegnare né ricreare il logo e non usare altri loghi o stemmi. Se non trovi il file allegato, non inserire segnaposto e segnalalo nella risposta finale.');
+    }
+    R.push('- Se la prima slide che ti indico è già una copertina (solo titolo, sottotitolo, nome o data), usala come copertina e non crearne un\'altra: aggiungi solo ciò che manca. In quel caso il file ha tante slide quante ne ho indicate.');
+    if (st.presentatore) {
+      R.push('- Nella copertina lascia due segnaposto veri di PowerPoint, vuoti, da compilare dopo: uno per il nome e cognome del presentatore, con il testo guida "Inserire nome e cognome", e uno per la data, con il testo guida "Inserire data". Non scrivere tu nessun nome e nessuna data. Se non riesci a creare segnaposto veri, usa due caselle di testo con quei testi guida in grigio chiaro.');
+    } else {
+      R.push('- Nella copertina non mettere il nome del presentatore né la data.');
+    }
+    R.push('');
+    R.push('IMPAGINAZIONE E LEGGIBILITÀ');
+    R.push('- Margini ampi (almeno 1,5 cm su ogni lato) e molto spazio vuoto. Sfondo bianco o molto chiaro, testo quasi nero, colore principale usato per i titoli e per un solo elemento di accento. Al massimo due font e una palette di due o tre colori, uguali in tutta la presentazione.');
+    R.push('- Font tra quelli presenti su ogni computer: Calibri, Arial o Georgia, uno per i titoli e uno per il testo.');
+    R.push('- Dimensioni: titoli tra 32 e 40 pt, testo tra 20 e 24 pt, mai sotto 18 pt (16 pt nelle tabelle). Contrasto alto tra testo e sfondo.');
+    R.push('- Titoli sempre nella stessa posizione (in alto a sinistra) e con la stessa dimensione; testo allineato a sinistra.');
+    R.push('- Copertina: titolo grande (44-54 pt) a sinistra, sottotitolo sotto in piccolo, molto spazio vuoto' + (st.presentatore ? '; nome e data in basso a sinistra (18-20 pt)' : '') + '.');
+    R.push('- Slide con un elenco: titolo in alto, punti sotto con interlinea ampia, quanti servono e non più di 6.');
+    R.push('- Slide con un solo concetto o un numero importante: la frase o la cifra in grande (44-60 pt), con tutto lo spazio vuoto intorno.');
+    R.push('- Slide con una tabella: tabella a tutta larghezza, intestazione in grassetto su fondo del colore principale con testo bianco, righe separate da linee sottili.');
+    if (uso.grafico) R.push('- Slide con un grafico: grafico grande, senza effetti 3D, con etichette leggibili (almeno 14 pt); un solo colore principale e grigi per il resto, senza legenda se bastano le etichette.');
+    if (uso.immagine) R.push('- Slide con un\'immagine: nella posizione che indico, con proporzioni intatte e allineata ai margini del testo; il testo non deve coprirla.');
+    if (uso.citazione) R.push('- Slide con una citazione: il testo in grande (28-36 pt), l\'autore sotto in piccolo, senza virgolette decorative giganti.');
+    R.push('- Non fare tutte le slide con titolo e un elenco puntato: varia l\'impaginazione secondo il contenuto.');
+    R.push('');
+    R.push('COSA EVITARE, PER NON FAR SEMBRARE LA PRESENTAZIONE FATTA CON L\'AI');
+    R.push('- Niente numeri prima dei titoli o dei punti (come "1.", "01", "Slide 1") e niente numeri grandi o cerchi numerati usati come decorazione. Usa elenchi numerati solo se l\'ordine dei passaggi conta davvero.');
+    R.push('- Niente sezioni numerate o con etichette generiche tipo "Introduzione", "Conclusioni", "Punti chiave" se non le ho scritte io.');
+    R.push('- Niente emoji, icone sparse, clipart o immagini segnaposto. Metti immagini solo se servono davvero e le hai.');
+    R.push('- Niente linee o barre decorative sotto i titoli, niente riquadri colorati intorno a ogni elenco, niente ombre pesanti, gradienti o angoli molto arrotondati.');
+    R.push('- Non forzare tre punti per ogni elenco. Evita le frasi a effetto, le contrapposizioni del tipo "non solo... ma anche" e i trattini lunghi (—).');
+    R.push('- Evita le parole e le formule tipiche dei testi generati, come "fondamentale", "cruciale", "panorama", "scopriamo", "in un mondo in cui", "approfondire", "sfruttare", "a 360 gradi", "viaggio", "svelare", e i loro equivalenti nella lingua scelta.');
+    R.push('- Non ripetere il titolo nel corpo della slide e non chiudere la slide con una frase che riassume quanto appena detto.');
+    R.push('- Non mettere in grassetto parole a caso e non scrivere in maiuscolo interi titoli o frasi.');
+    R.push('');
+    R.push('CONTROLLO PRIMA DI CONSEGNARE');
+    R.push('Prima di darmi il file, aprilo e controllalo. Se trovi un problema, correggilo e ricontrolla:');
+    R.push('- la prima slide è la copertina' + (st.presentatore ? ', con i due segnaposto vuoti per nome e data e senza nessun nome o data scritti da te;' : ', senza nome del presentatore né data;'));
+    if (testo) {
+      R.push('- tutto il contenuto del mio testo è presente nelle slide, nell\'ordine in cui l\'ho scritto' + (num ? ', e oltre alla copertina ci sono esattamente ' + num + ' slide;' : ', e il numero di slide è adatto alla lunghezza del testo;'));
+    } else {
+      R.push(sviluppa
+        ? '- le slide corrispondono alle schede elencate, nello stesso ordine;'
+        : '- oltre alla copertina ci sono esattamente ' + n + ' slide, nello stesso ordine di quelle elencate;');
+    }
+    if (st.zona) R.push('- il sottotitolo della copertina è esattamente «Zona Fiorentina Sud-Est»;');
+    if (logo) R.push(logo === 'tutte'
+      ? '- il logo allegato è in copertina e, piccolo e nella stessa posizione, in tutte le altre slide, con le proporzioni intatte;'
+      : '- il logo allegato è nella copertina, con le proporzioni intatte, e non compare nelle altre slide;');
+    R.push('- nessun testo esce dai bordi o è tagliato e nessun elemento ne copre un altro;');
+    R.push('- nessun testo è sotto le dimensioni minime e il contrasto è alto ovunque;');
+    R.push('- titoli, margini e font sono uguali in tutte le slide;');
+    R.push('- non è rimasto nessun segnaposto vuoto o testo di prova (come "Clicca per aggiungere un titolo" o "Lorem ipsum");');
+    R.push('- le note del relatore sono nelle note e non sulle slide.');
+    R.push('');
+    R.push('RISPOSTA FINALE');
+    R.push('- Non farmi domande prima di creare il file: procedi con quello che trovi qui.');
+    R.push('- Quando il file è pronto, rispondi solo con il link per scaricarlo e, se serve, un elenco breve di dubbi, informazioni mancanti o problemi del controllo che non sei riuscito a correggere. Non riassumere la presentazione.');
+    return R.join('\n');
+  }
+
+  function buildPrompt() {
+    var st = state.settings;
+    var slides = state.slides.filter(hasContent);
+    var sviluppa = st.autonomia === 'Sviluppa a partire da appunti';
+    var testo = st.modo === 'testo';
+    var num = numeroRichiesto(st);
+    var L = [];
+    L.push('Crea una presentazione PowerPoint e consegnamela come file .pptx scaricabile, usando la funzione di creazione file.');
+    L.push('');
+    L.push('IMPOSTAZIONI');
+    L.push('- Argomento: ' + (st.argomento.trim() || 'non specificato, deducilo dal ' + (testo ? 'testo' : 'contenuto delle slide')));
+    L.push('- Titolo della presentazione: ' + (st.titolo.trim() || 'scegline tu uno breve, in base all\'argomento e al contenuto'));
+    L.push('- Pubblico: ' + (st.pubblico.trim() || 'non specificato, un pubblico generale'));
+    L.push('- Lingua: ' + st.lingua);
+    L.push('- Tono: ' + st.tono + (TONI[st.tono] ? ' (' + TONI[st.tono] + ')' : ''));
+    L.push('- Stile grafico: ' + st.stile);
+    L.push('- Colore principale: ' + (st.coloreAuto ? 'scegli tu un colore adatto all\'argomento' + (st.logo === 'copertina' || st.logo === 'tutte' ? ' e in armonia con il blu del logo allegato' : '') : st.colore));
+    L.push('- Quantità di testo: ' + (LUNGHEZZE[st.lunghezza] || LUNGHEZZE.Media));
+    L.push('- Come lavorare sui miei testi: ' + st.autonomia);
+    L.push('- Formato: 16:9');
+    if (testo) L.push('- Numero di slide: ' + (num ? 'esattamente ' + num + ', copertina esclusa' : 'decidilo tu, in base alla lunghezza del testo, al pubblico e alla durata della presentazione, copertina esclusa'));
+    else L.push('- Numero di slide: ' + (sviluppa ? slides.length + (slides.length === 1 ? ' scheda' : ' schede') + ' (di norma una slide per scheda), più la copertina' : slides.length + ', più la copertina'));
+    L.push('');
+    var uso = {
+      grafico: slides.some(function (s) { return s.grafico && tableHasText(s.tabella); }),
+      immagine: slides.some(hasImage),
+      citazione: slides.some(hasQuote)
+    };
+    if (testo) uso = { grafico: true, immagine: true, citazione: true };
+    L.push(buildRules(st, slides.length, uso));
+    L.push('');
+    if (testo) {
+      L.push('TESTO DELLA PRESENTAZIONE');
+      L.push('');
+      L.push(st.testo.replace(/\s+$/, '').replace(/^\s*\n/, ''));
+      return L.join('\n');
+    }
+    L.push('CONTENUTO DELLE SLIDE');
+    slides.forEach(function (s, i) {
+      L.push('');
+      L.push('--- Slide ' + (i + 1) + ' ---');
+      L.push('Titolo: ' + (s.titolo.trim() || '(titolo da scegliere)'));
+      if (s.contenuto.trim()) { L.push('Contenuto:'); L.push(s.contenuto.replace(/\s+$/, '')); }
+      if (hasQuote(s)) {
+        L.push('Citazione: "' + s.citazione.testo.trim() + '"');
+        if (s.citazione.autore.trim()) L.push('Autore della citazione: ' + s.citazione.autore.trim());
+      }
+      if (hasImage(s)) L.push('Immagine allegata: ' + s.immagine.descrizione.trim() + ' (posizione: ' + s.immagine.posizione.toLowerCase() + ')');
+      if (tableHasText(s.tabella)) {
+        L.push(s.grafico
+          ? 'Grafico (' + s.grafico.tipo.toLowerCase() + '), con questi dati (nomi delle serie nella prima riga, categorie nella prima colonna):'
+          : 'Tabella:');
+        L.push(tableToMarkdown(s.tabella));
+      }
+      if (s.note.trim()) { L.push('Note del relatore: ' + s.note.trim()); }
+    });
+    return L.join('\n');
+  }
+
+  /* ---------- Aggiornamento ---------- */
+  function segnaModificato(v) { $('#prompt-box').classList.toggle('dirty', v); }
+  var promptEl = $('#prompt');
+  function updatePrompt() {
+    var testo = state.settings.modo === 'testo';
+    var n = testo ? (state.settings.testo.trim() ? 1 : 0) : state.slides.filter(hasContent).length;
+    $('#copy').disabled = n === 0;
+    $('#hint').textContent = n === 0
+      ? (testo ? 'Incolla un testo per poter copiare il prompt.' : 'Scrivi almeno una slide per poter copiare il prompt.')
+      : testo ? 'Testo pronto nel prompt: le slide le decide l\'assistente.'
+      : n + (n === 1 ? ' slide pronta' : ' slide pronte') + ' nel prompt.';
+    copiato = false; apertoClaude = false;
+    aggiornaAvanzate();
+    aggiornaLogo();
+    $('#s3-logo').hidden = $('#logo-box').hidden;
+    aggiornaPassi();
+    if (promptDirty) { $('#banner').classList.add('show'); segnaModificato(true); return; }
+    promptEl.value = buildPrompt();
+  }
+  function changed() { save(); updatePrompt(); }
+
+  promptEl.addEventListener('input', function () {
+    copiato = false; aggiornaPassi();
+    promptDirty = true;
+    $('#banner').classList.add('show'); segnaModificato(true);
+  });
+  $('#regen').addEventListener('click', function () {
+    promptDirty = false;
+    $('#banner').classList.remove('show'); segnaModificato(false);
+    promptEl.value = buildPrompt();
+  });
+
+  /* ---------- Copia ---------- */
+  var statusEl = $('#status'), statusTimer;
+  function flash(msg, err) {
+    statusEl.textContent = msg;
+    statusEl.className = 'status' + (err ? ' err' : '');
+    clearTimeout(statusTimer);
+    statusTimer = setTimeout(function () { statusEl.textContent = ''; }, 5000);
+  }
+  function fallbackCopy(text) {
+    var ta = document.createElement('textarea');
+    ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+    document.body.appendChild(ta); ta.select();
+    var ok = false;
+    try { ok = document.execCommand('copy'); } catch (e) { ok = false; }
+    document.body.removeChild(ta);
+    return ok;
+  }
+  function copiaPrompt() {
+    var text = promptEl.value;
+    var done = function () { flash('Copiato. Ora incollalo in Claude.'); copiato = true; aggiornaPassi(); };
+    var fail = function () {
+      if (fallbackCopy(text)) done();
+      else { $('#prompt-box').open = true; promptEl.focus(); promptEl.select(); flash('Copia non riuscita: il testo è selezionato, premi Ctrl+C.', true); }
+    };
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(done, fail);
+    } else { fail(); }
+  }
+  $('#copy').addEventListener('click', copiaPrompt);
+  $('#open-claude').addEventListener('click', function () { apertoClaude = true; aggiornaPassi(); });
+  document.querySelectorAll('a[download]').forEach(function (a) { a.addEventListener('click', function () { logoScaricato = true; aggiornaPassi(); }); });
+
+  /* ---------- Modelli e testo da dividere ---------- */
+  function mk(titolo, suggerimento, conTabella) {
+    var s = newSlide();
+    s.titolo = titolo; s.suggerimento = suggerimento;
+    if (conTabella) s.tabella = newTable();
+    return s;
+  }
+  var MODELLI = [
+    {
+      nome: 'Presa in carico / PDTA', desc: 'Per presentare il percorso di un paziente cronico sul territorio.',
+      impostazioni: { tono: 'Tecnico e preciso', stile: 'Sobrio e minimale', lunghezza: 'Media', autonomia: 'Rifinisci e migliora' },
+      slide: function () { return [
+        mk('A chi si rivolge il percorso', 'La popolazione di riferimento: quali pazienti, criteri di inclusione ed eventuali numeri del distretto.'),
+        mk('Il percorso del paziente', 'Le tappe dall\'accesso alla presa in carico, dal medico di famiglia alla Casa della Comunità.'),
+        mk('Chi fa cosa', 'Ruoli e compiti: medico di medicina generale, infermiere, specialista, altri professionisti.', true),
+        mk('Strumenti e raccordi', 'Strumenti condivisi, comunicazione tra i professionisti, continuità con ospedale e servizi sociali.'),
+        mk('Indicatori di monitoraggio', 'Come si valuta il percorso: indicatori, fonte dei dati e frequenza.', true),
+        mk('Prossimi passi', 'Cosa resta da fare, con responsabili e tempi.')
+      ]; }
+    },
+    {
+      nome: 'Report attività e indicatori', desc: 'Per riferire i dati di attività del distretto in un periodo.',
+      impostazioni: { tono: 'Formale e professionale', stile: 'Sobrio e minimale', lunghezza: 'Essenziale', autonomia: 'Fedele al testo' },
+      slide: function () { return [
+        mk('Il contesto', 'Territorio e popolazione di riferimento, periodo considerato, fonte dei dati.'),
+        mk('Indicatori principali', 'I dati chiave del periodo, con il confronto rispetto al periodo precedente.', true),
+        mk('Andamento nel tempo', 'Come sono cambiati i dati: puoi trasformare la tabella in un grafico.', true),
+        mk('Criticità', 'Cosa non ha raggiunto l\'obiettivo e le possibili cause.'),
+        mk('Azioni previste', 'Gli interventi decisi, con responsabile e scadenza.')
+      ]; }
+    },
+    {
+      nome: 'Casa della Comunità / nuovo servizio', desc: 'Per proporre l\'avvio o la riorganizzazione di un servizio territoriale.',
+      impostazioni: { tono: 'Formale e professionale', stile: 'Moderno e pulito', lunghezza: 'Essenziale', autonomia: 'Rifinisci e migliora' },
+      slide: function () { return [
+        mk('Il bisogno di salute', 'Quale bisogno della comunità il servizio affronta e come lo si è rilevato.'),
+        mk('Il servizio proposto', 'Cosa offre, a chi si rivolge, orari e modalità di accesso.'),
+        mk('Organizzazione e professionisti', 'Chi lavora nel servizio e come si coordina con i medici di famiglia e gli altri servizi.'),
+        mk('Risorse, tempi e costi', 'Personale, spazi, fasi di avvio e scadenze.', true),
+        mk('Risultati attesi', 'Cosa cambia per i cittadini e come lo si misura.'),
+        mk('Cosa chiediamo', 'La decisione o il sostegno che servono per partire.')
+      ]; }
+    },
+    {
+      nome: 'Formazione e aggiornamento', desc: 'Per un incontro di aggiornamento rivolto a medici e personale sanitario.',
+      impostazioni: { tono: 'Chiaro e divulgativo', stile: 'Sobrio e minimale', lunghezza: 'Media', autonomia: 'Rifinisci e migliora' },
+      slide: function () { return [
+        mk('Obiettivi dell\'incontro', 'Cosa avranno chiarito o saranno in grado di fare i partecipanti alla fine.'),
+        mk('Il quadro di riferimento', 'Linee guida, norme o dati su cui si basa l\'argomento.'),
+        mk('Un caso dalla pratica', 'Un caso anonimo e realistico che mostri il problema (nessun dato che identifichi il paziente).'),
+        mk('Cosa fare in pratica', 'I comportamenti e i passaggi operativi da adottare.'),
+        mk('Da ricordare', 'Le due o tre cose da portare a casa.'),
+        mk('Per approfondire', 'Documenti e riferimenti da consultare.')
+      ]; }
+    }
+  ];
+
+  function slidesFilled() { return state.slides.some(hasContent); }
+  function afterSlidesChange() { save(); renderSlides(); updatePrompt(); }
+
+  // Le slide del modello sono state modificate dall'utente?
+  function modelloModificato() {
+    return !!state.modello && JSON.stringify(state.slides) !== state.modello.originale;
+  }
+  function aggiornaModello() {
+    var m = state.modello;
+    $('#model-bar').hidden = !m;
+    $('#model-name').textContent = m ? m.nome : '';
+    document.querySelectorAll('button.tpl').forEach(function (b) {
+      b.classList.toggle('on', !!m && b.getAttribute('data-nome') === m.nome);
+    });
+  }
+
+  var tplRow = $('#tpl-row');
+  MODELLI.forEach(function (m) {
+    tplRow.appendChild(h('button', { type: 'button', class: 'tpl', 'data-nome': m.nome, onclick: function () {
+      var avvisa = state.modello ? modelloModificato() : slidesFilled();
+      if (avvisa && !confirm('Sostituire le slide attuali con il modello «' + m.nome + '»?')) return;
+      // Si ricorda com'era la situazione prima del primo modello, anche se poi ne scegli un altro
+      var prima = state.modello ? state.modello.prima : {
+        settings: Object.keys(m.impostazioni).reduce(function (o, k) { o[k] = state.settings[k]; return o; }, {}),
+        slides: JSON.parse(JSON.stringify(state.slides))
+      };
+      Object.keys(m.impostazioni).forEach(function (k) { state.settings[k] = m.impostazioni[k]; });
+      state.slides = m.slide();
+      state.modello = { nome: m.nome, originale: JSON.stringify(state.slides), prima: prima };
+      $('#tools-start').open = false;
+      fillSettings(); afterSlidesChange();
+      document.querySelector('#slides .card').scrollIntoView({ block: 'center' });
+    } }, h('strong', { text: m.nome }), h('span', { text: m.desc })));
+  });
+
+  $('#model-remove').addEventListener('click', function () {
+    if (!state.modello) return;
+    if (modelloModificato() && !confirm('Hai modificato le slide del modello: rimuoverlo le cancella. Continuare?')) return;
+    var prima = state.modello.prima;
+    Object.keys(prima.settings).forEach(function (k) { state.settings[k] = prima.settings[k]; });
+    state.slides = prima.slides.length ? prima.slides : [newSlide()];
+    state.modello = null;
+    fillSettings(); afterSlidesChange();
+  });
+
+  /* ---------- Tema chiaro/scuro ---------- */
+  var TEMA_KEY = 'crea-presentazioni-tema';
+  var temaScelto = false;
+  try { var tSalvato = localStorage.getItem(TEMA_KEY); temaScelto = tSalvato === 'dark' || tSalvato === 'light'; } catch (e) { /* ignora */ }
+  function applicaTema(t) {
+    document.documentElement.setAttribute('data-theme', t);
+    var scuro = t === 'dark';
+    $('#tema .ic').textContent = scuro ? '☀️' : '🌙';
+    $('#tema .t').textContent = scuro ? 'Tema chiaro' : 'Tema scuro';
+    $('#tema').setAttribute('aria-label', scuro ? 'Passa al tema chiaro' : 'Passa al tema scuro');
+    var meta = document.querySelector('meta[name=theme-color]');
+    if (meta) meta.setAttribute('content', scuro ? '#171614' : '#b8502a');
+  }
+  applicaTema(document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'light');
+  $('#tema').addEventListener('click', function () {
+    var nuovo = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    temaScelto = true;
+    try { localStorage.setItem(TEMA_KEY, nuovo); } catch (e) { /* ignora */ }
+    applicaTema(nuovo);
+  });
+  // Finché l'utente non sceglie, segue il tema del dispositivo anche se cambia mentre la pagina è aperta
+  if (window.matchMedia) {
+    var mq = window.matchMedia('(prefers-color-scheme: dark)');
+    var segui = function (e) { if (!temaScelto) applicaTema(e.matches ? 'dark' : 'light'); };
+    if (mq.addEventListener) mq.addEventListener('change', segui);
+    else if (mq.addListener) mq.addListener(segui);
+  }
+
+  /* ---------- Orientamento: barra laterale dei passi ---------- */
+  var SEZIONI = ['#sec-impostazioni', '#sec-slide', '#sec-prompt'];
+  var copiato = false;   // il prompt attuale è stato copiato?
+  var apertoClaude = false, logoScaricato = false;
+  var scrollInCorso = false;
+
+  function titoloBreve(sl) {
+    var t = sl.titolo.trim() || sl.contenuto.trim().split('\n')[0].replace(/^[-\s]+/, '').trim();
+    return t || 'Senza titolo';
+  }
+  // Spunte di completamento ed elenco delle slide
+  function aggiornaPassi() {
+    var st = state.settings, testo = st.modo === 'testo';
+    $('#s3-copia').classList.toggle('done', copiato);
+    $('#s3-claude').classList.toggle('done', apertoClaude);
+    $('#s3-logo').classList.toggle('done', logoScaricato);
+    var fatti = [
+      !!(st.argomento.trim() || st.titolo.trim() || st.pubblico.trim()),
+      testo ? !!st.testo.trim() : state.slides.some(hasContent),
+      copiato
+    ];
+    var nomi = ['Impostazioni', 'Slide', 'Prompt'];
+    document.querySelectorAll('.st-item').forEach(function (el, i) {
+      el.classList.toggle('done', fatti[i]);
+      el.querySelector('.st-main').setAttribute('aria-label', 'Passo ' + (i + 1) + ': ' + nomi[i] + (fatti[i] ? ', completato' : ''));
+    });
+    var box = $('#st-slides');
+    box.innerHTML = '';
+    box.hidden = testo;
+    if (!testo) {
+      state.slides.forEach(function (sl, i) {
+        box.appendChild(h('a', { href: '#slides', title: 'Vai alla slide ' + (i + 1), onclick: function (e) {
+          e.preventDefault();
+          var c = document.querySelectorAll('#slides .card')[i];
+          if (c) c.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        } }, h('b', { text: String(i + 1) }), h('span', { text: titoloBreve(sl) })));
+      });
+    }
+    suScorrimento();
+  }
+
+  function aggiornaScorrimento() {
+    scrollInCorso = false;
+    var soglia = window.innerHeight * 0.35, attivo = 0;
+    SEZIONI.forEach(function (id, i) { if ($(id).getBoundingClientRect().top <= soglia) attivo = i; });
+    document.querySelectorAll('.st-item').forEach(function (el, i) {
+      el.classList.toggle('on', i === attivo);
+      var a = el.querySelector('.st-main');
+      if (i === attivo) a.setAttribute('aria-current', 'step'); else a.removeAttribute('aria-current');
+    });
+    var corrente = -1;
+    document.querySelectorAll('#slides .card').forEach(function (c, i) { if (c.getBoundingClientRect().top <= soglia) corrente = i; });
+    document.querySelectorAll('#st-slides a').forEach(function (a, i) { a.classList.toggle('on', attivo === 1 && i === corrente); });
+    var max = document.documentElement.scrollHeight - window.innerHeight;
+    var pct = max > 0 ? Math.min(100, Math.max(0, window.scrollY / max * 100)) : 0;
+    $('#st-fill').style.clipPath = 'inset(0 0 ' + (100 - pct) + '% 0)';
+  }
+  function suScorrimento() { if (!scrollInCorso) { scrollInCorso = true; (window.requestAnimationFrame || function (f) { setTimeout(f, 16); })(aggiornaScorrimento); } }
+  window.addEventListener('scroll', suScorrimento, { passive: true });
+  window.addEventListener('resize', suScorrimento);
+
+  // Barra comprimibile (la scelta resta salvata)
+  var RAIL_KEY = 'crea-presentazioni-barra';
+  function aggiornaCollassa() {
+    var min = document.documentElement.classList.contains('rail-min');
+    var b = $('#st-collapse');
+    b.querySelector('.ic').textContent = min ? '›' : '‹';
+    b.querySelector('.t').textContent = min ? 'Espandi' : 'Comprimi';
+    b.setAttribute('aria-expanded', String(!min));
+    b.setAttribute('title', min ? 'Espandi la barra dei passi' : 'Comprimi la barra dei passi');
+  }
+  $('#st-collapse').addEventListener('click', function () {
+    var min = document.documentElement.classList.toggle('rail-min');
+    try { localStorage.setItem(RAIL_KEY, min ? 'min' : ''); } catch (e) { /* ignora */ }
+    aggiornaCollassa();
+  });
+  aggiornaCollassa();
+
+  /* ---------- Pannello delle guide (barra laterale) ---------- */
+  var drawer = $('#drawer'), guidaAperta = '', fuocoPrima = null;
+  var TITOLI_GUIDA = { iniziare: 'Prima di iniziare', account: 'Come creare un account Claude' };
+  function apriGuida(nome) {
+    if (!guidaAperta) fuocoPrima = document.activeElement;
+    guidaAperta = nome;
+    ['iniziare', 'account'].forEach(function (n) { $('#dp-' + n).hidden = n !== nome; });
+    $('#drawer-title').textContent = TITOLI_GUIDA[nome];
+    drawer.removeAttribute('inert'); drawer.setAttribute('aria-hidden', 'false');
+    document.body.classList.add('drawer-open');
+    document.querySelectorAll('.st-guide .st-tool').forEach(function (b) { b.setAttribute('aria-expanded', b.getAttribute('data-guida') === nome ? 'true' : 'false'); });
+    $('.drawer-body').scrollTop = 0;
+    $('#drawer-close').focus();
+  }
+  function chiudiGuida() {
+    if (!guidaAperta) return;
+    guidaAperta = '';
+    document.body.classList.remove('drawer-open');
+    drawer.setAttribute('inert', ''); drawer.setAttribute('aria-hidden', 'true');
+    document.querySelectorAll('.st-guide .st-tool').forEach(function (b) { b.removeAttribute('aria-expanded'); });
+    if (fuocoPrima && fuocoPrima.focus && document.contains(fuocoPrima)) fuocoPrima.focus();
+  }
+  document.querySelectorAll('[data-guida]').forEach(function (el) {
+    el.addEventListener('click', function () {
+      var n = el.getAttribute('data-guida');
+      if (guidaAperta === n && el.closest('.st-guide')) chiudiGuida(); else apriGuida(n);
+    });
+  });
+  $('#drawer-close').addEventListener('click', chiudiGuida);
+  $('#drawer-bg').addEventListener('click', chiudiGuida);
+  document.addEventListener('keydown', function (e) {
+    if (!guidaAperta) return;
+    if (e.key === 'Escape') { chiudiGuida(); return; }
+    if (e.key !== 'Tab') return;
+    // il fuoco resta dentro il pannello finché è aperto
+    var f = drawer.querySelectorAll('a[href], button:not([disabled])');
+    if (!f.length) return;
+    var primo = f[0], ultimo = f[f.length - 1];
+    if (e.shiftKey && document.activeElement === primo) { e.preventDefault(); ultimo.focus(); }
+    else if (!e.shiftKey && document.activeElement === ultimo) { e.preventDefault(); primo.focus(); }
+  });
+
+  /* ---------- Reset e avvio ---------- */
+  $('#reset').addEventListener('click', function () {
+    if (!confirm('Cancellare impostazioni e slide e ricominciare?')) return;
+    state = defaults(); promptDirty = false;
+    $('#banner').classList.remove('show'); segnaModificato(false);
+    fillSettings(); renderSlides(); save(); updatePrompt();
+  });
+  $('#add-slide').addEventListener('click', function () {
+    state.slides.push(newSlide());
+    save(); renderSlides(); updatePrompt();
+    var cards = document.querySelectorAll('#slides .card');
+    var last = cards[cards.length - 1];
+    if (last) { last.scrollIntoView({ block: 'center' }); var inp = last.querySelector('input'); if (inp) inp.focus({ preventScroll: true }); }
+  });
+
+  bindSettings();
+  fillSettings();
+  renderSlides();
+  updatePrompt();
+  aggiornaScorrimento();
+})();
+</script>
 </body>
 </html>
